@@ -1,0 +1,17 @@
+name: Jacked vulnerability scan
+on:
+  push:
+    branches:
+      - main
+jobs:
+  jacked:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm install
+      - name: Run Jacked
+        uses: carbonetes/jacked@v1.1.0
+        with:
+          package-manager: npm
