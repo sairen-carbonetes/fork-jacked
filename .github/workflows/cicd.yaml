@@ -12,6 +12,6 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run Jacked
-        uses: carbonetes/jacked@v1.1.0
+        uses: carbonetes/jacked@v1.0.1
         with:
           package-manager: npm
