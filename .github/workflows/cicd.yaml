@@ -1,15 +1,19 @@
-name: Jacked vulnerability scan
+name: Jacked Vulnerability Scan
 on:
   push:
-    branches:
-      main
+    branches: [main]
 jobs:
-  jacked:
+  scan:
     runs-on: ubuntu-latest
+    container:
+      image: alpine:3.15
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Run Jacked vulnerability scan
-        uses: docker://carbonetes/jacked:latest
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2.4.0
         with:
-          args: jacked --ci
+          node-version: '14.x'
+      - name: Install dependencies
+        run: npm install
+      - name: Run Jacked vulnerability scan
+        run: npx jacked --report
