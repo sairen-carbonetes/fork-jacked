@@ -1,29 +1,16 @@
-name: Jacked Vulnerability Scan
-
-on:
-  push:
-    branches: [ main ]
+name: Jacked Scan
+on: [push, pull_request]
 
 jobs:
   jacked:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Jacked vulnerability scan
-      id: jacked_scan
-      uses: docker://alpine/alpine:latest
-      with:
-        args: --dir ./~/ --output-format json
-
-    - name: Upload Jacked report
-      uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        name: Jacked Report
-        path: |
-          ./~/jacked-report.json
+      - uses: actions/checkout@v2
+      - name: Install Jacked
+        run: |
+          npm install -g @carbonetes/jacked
+      - name: Run Jacked Scan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          jacked scan
