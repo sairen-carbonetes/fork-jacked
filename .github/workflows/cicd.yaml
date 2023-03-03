@@ -16,9 +16,9 @@ jobs:
 
     - name: Jacked vulnerability scan
       id: jacked_scan
-      uses: docker://carbonetes/jacked:latest
+      uses: docker://alpine/alpine:latest
       with:
-        args: --dir ./path/to/directory --output-format json
+        args: --dir ./~/ --output-format json
 
     - name: Upload Jacked report
       uses: actions/upload-artifact@v2
@@ -26,4 +26,4 @@ jobs:
       with:
         name: Jacked Report
         path: |
-          ./path/to/directory/jacked-report.json
+          ./~/jacked-report.json
