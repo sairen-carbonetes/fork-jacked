@@ -1,37 +1,29 @@
-name: CI/CD Pipeline
+name: Jacked Vulnerability Scan
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  build:
+  jacked:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Go environment
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.17'
-        
-      - name: Build Go app
-        run: go build -o app
+    - name: Install dependencies
+      run: npm install
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: false
-          tags: docker.io/myuser/myapp:latest
-          
-      - name: Run vulnerability scan
-        uses: docker://alpine:3.15
-        with:
-          entrypoint: sh
-          args: ["-c", "apk update && apk add git && go get github.com/carbonetes/jacked && jacked -path /github/workspace"]
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Jacked vulnerability scan
+      id: jacked_scan
+      uses: docker://carbonetes/jacked:latest
+      with:
+        args: --dir ./path/to/directory --output-format json
+
+    - name: Upload Jacked report
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: Jacked Report
+        path: |
+          ./path/to/directory/jacked-report.json
