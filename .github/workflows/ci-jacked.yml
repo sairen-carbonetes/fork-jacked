@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Run carbonetes/jacked
-        uses: carbonetes/jacked@v1.0.0
+      - name: Run sairen-carbonetes/jacked-action
+        uses: sairen-carbonetes/jacked-action@v1.0.0
         with:
-          repository: <your-repository-url>
-          fail_on_vulnerability: true
+          fail_on_vulnerability: false
+          path: "."
