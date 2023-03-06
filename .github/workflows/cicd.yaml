@@ -31,7 +31,10 @@ jobs:
       - name: Checking out your repository...
         uses: actions/checkout@v3
         with:
-          repository: ${{ secrets.SCAN_REPO}}
+          repository: ${{ variables.SCAN_REPO}}
           ref: main
+
+      - name: Getting workspace...
+        run: echo $(basename ${{ github.workspace }})
     
       
