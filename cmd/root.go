@@ -30,7 +30,7 @@ func preRun(_ *cobra.Command, args []string) {
 	if len(args) > 0 {
 		arguments.Image = &args[0]
 		arguments.Quiet = &quiet
-		cfg.Output = outputFormat
+		cfg.Output = *arguments.Output
 		cfg.LicenseFinder = license
 
 		if *arguments.Quiet {
@@ -54,18 +54,59 @@ func run(c *cobra.Command, args []string) {
 		}
 	}
 
-	if len(args) == 0 && len(*arguments.Image) == 0 && len(*arguments.Dir) == 0 && len(*arguments.Tar) == 0 {
+	if len(args) == 0 && len(*arguments.Image) == 0 && len(*arguments.Dir) == 0 && len(*arguments.Tar) == 0 && len(*arguments.SbomFile) == 0 {
 		err := c.Help()
 		if err != nil {
 			log.Errorln(err.Error())
 		}
 		os.Exit(0)
 	}
-	if !strings.Contains(*arguments.Image, tagSeparator) {
+
+	compareOutputToOutputTypes(*arguments.Output)
+
+	if len(*arguments.Image) != 0 && !strings.Contains(*arguments.Image, tagSeparator) {
 		log.Print("Using default tag:", defaultTag)
 		modifiedTag := *arguments.Image + tagSeparator + defaultTag
 		arguments.Image = &modifiedTag
+		*arguments.Tar = ""
+		*arguments.Dir = ""
+		*arguments.SbomFile = ""
+	} else if len(*arguments.Tar) != 0 {
+		log.Printf("Scanning Tar File: %v", *arguments.Tar)
+		arguments.Image = nil
+		*arguments.Dir = ""
+		*arguments.SbomFile = ""
+	} else if len(*arguments.Dir) != 0 {
+		log.Printf("Scanning Directory: %v", *arguments.Dir)
+		arguments.Image = nil
+		*arguments.Tar = ""
+		*arguments.SbomFile = ""
+	} else if len(*arguments.SbomFile) != 0 {
+		log.Printf("Scanning SBOM JSON: %v", *arguments.SbomFile)
+		arguments.Image = nil
+		*arguments.Tar = ""
+		*arguments.Dir = ""
 	}
 
 	engine.Start(&arguments, &cfg)
+}
+
+// ValidateOutputArg checks if output types specified are valid
+func compareOutputToOutputTypes(outputs string) {
+	var noMatch bool
+	for _, output := range strings.Split(outputs, ",") {
+		for _, outputType := range OutputTypes {
+			if strings.EqualFold(output, outputType) {
+				noMatch = true
+				break
+			}
+			noMatch = false
+		}
+		if !noMatch {
+			log.Printf("[warning]: Invalid output type: %+v \nSupported output types: %v", output, OutputTypes)
+			os.Exit(0)
+
+		}
+	}
+
 }
