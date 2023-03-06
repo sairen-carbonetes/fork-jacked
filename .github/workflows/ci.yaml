@@ -21,8 +21,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ${{ secrets.SCAN_REPO}}
-          ref: main
-          path: ${{ github.workspace }} / ${{ secrets.SCAN_REPO}}
+          ref: ${{ secrets.SCAN_REPO_BRANCH}}
+          
+      - name: Setup workspace...
+        run: |
+          echo $(basename ${{ github.workspace }})
+          cd ..
+          echo $(basename ${{ github.workspace }})
 
       - name: Setup go environment
         uses: actions/setup-go@v3
@@ -33,13 +38,6 @@ jobs:
           
       - name: Installing dependencies...
         run: go mod tidy
-
-
-      - name: Setup workspace...
-        run: |
-          echo $(basename ${{ github.workspace }})
-          cd ..
-          echo $(basename ${{ github.workspace }})
         
       - name: Jacked Initialize Scanning...
         run: go run . -d ${{ github.workspace }}
