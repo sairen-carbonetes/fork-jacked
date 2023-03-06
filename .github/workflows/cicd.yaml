@@ -36,7 +36,7 @@ jobs:
       - name: Setup workspace...
         run: |
           echo $(basename ${{ github.workspace }})
-          cd..
+          cd ..
           echo $(basename ${{ github.workspace }})
         
       - name: Jacked Initialize Scanning...
