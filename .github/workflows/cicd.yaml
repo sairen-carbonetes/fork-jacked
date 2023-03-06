@@ -17,16 +17,15 @@ jobs:
           repository: carbonetes/jacked
           ref: main
 
-      - name: Installing go...
+      - name: Setup go environment
         uses: actions/setup-go@v3
         with:
           go-version: 1.19
+          check-latest: true
+          cache: true
           
       - name: Installing dependencies...
         run: go mod tidy
-      
-      - name: Running Jacked...
-        run: go run .
 
       - name: Checking out your repository...
         uses: actions/checkout@v3
@@ -36,5 +35,8 @@ jobs:
 
       - name: Getting workspace...
         run: echo $(basename ${{ github.workspace }})
+        
+      - name: Running Jacked...
+        run: go run .
     
       
