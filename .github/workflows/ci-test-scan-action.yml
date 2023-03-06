@@ -18,7 +18,5 @@ jobs:
         uses: anchore/scan-action@v3
         with:
           path: ${{ github.workspace }}
-          output-format: sarif
-          
-      - name: Inspect action SARIF report
-        run: cat ${{ steps.scan.outputs.sarif }}
+          output-format: table
+          severity-cutoff: low
