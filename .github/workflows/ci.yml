@@ -1,0 +1,43 @@
+# name: optional, title of the github action
+name: Jacked Scan
+# on: github action like pull-request, push, events
+on: [push, pull_request]
+# jobs: one or more
+jobs:
+  jacked: #jacked: is the custom name of the build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps: # steps: can run commands, setup tasks OR run an action
+    
+      - name: Checking out your repository...
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ secrets.SCAN_REPO}}
+          ref: ${{ secrets.SCAN_REPO_BRANCH}}
+
+          
+      - name: Checking out Jacked...
+        uses: actions/checkout@v2 # uses: select an action, actions based on "github.com/actions" then this will call the github.com/actions -> action.yml, the @latest: is the version release
+        with:
+          repository: carbonetes/jacked
+          ref: main
+          path: cjacked
+          run: cd cjacked
+
+      - name: Setup go environment
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+          check-latest: true
+          cache: true
+          
+      - name: Installing dependencies...
+        run: go mod tidy
+        
+      - name: Jacked Initialize Scanning...
+        run: go run . -d ${{ github.workspace }}
+    
+      
