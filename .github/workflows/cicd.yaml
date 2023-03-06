@@ -13,7 +13,10 @@ jobs:
     steps: # steps: can run commands, setup tasks OR run an action
       - name: Checking out Jacked...
         uses: actions/checkout@v3 # uses: select an action, actions based on "github.com/actions" then this will call the github.com/actions -> action.yml, the @latest: is the version release
-       
+        with:
+          repository: carbonetes/jacked
+          ref: main
+
       - name: Installing go...
         uses: actions/setup-go@v3
         with:
@@ -24,5 +27,11 @@ jobs:
       
       - name: Running Jacked...
         run: go run .
+
+      - name: Checking out your repository...
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ variables.SCAN_REPO}}
+          ref: main
     
       
