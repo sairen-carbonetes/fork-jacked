@@ -13,7 +13,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        
       - name: Scan current project
         uses: anchore/scan-action@v3
         with:
           path: ${{ github.workspace }}
+          
+      - name: Inspect action SARIF report
+        run: cat ${{ steps.scan.outputs.sarif }}
