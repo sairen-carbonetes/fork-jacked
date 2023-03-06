@@ -1,0 +1,17 @@
+
+# name: optional, title of the github action
+name: Jacked Action
+# on: github action like pull-request, push, events
+on: [push, pull_request]
+# jobs: one or more
+jobs:
+  jacked: #jacked: is the custom name of the build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - name: Scan current project
+        uses: anchore/scan-action@v3
+        with:
+          path: "."
