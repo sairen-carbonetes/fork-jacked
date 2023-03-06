@@ -1,6 +1,6 @@
 
 # name: optional, title of the github action
-name: Jacked Action
+name: scan action grype
 # on: github action like pull-request, push, events
 on: [push, pull_request]
 # jobs: one or more
