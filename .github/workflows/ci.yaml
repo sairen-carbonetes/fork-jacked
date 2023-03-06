@@ -19,13 +19,13 @@ jobs:
           ref: main
           
       - run: |
-          mkdir -p $GITHUB_WORKSPACE/jacked
-          cd $GITHUB_WORKSPACE/jacked
-        working-directory: $GITHUB_WORKSPACE/jacked
+          mkdir -p ${{ github.workspace }}/jacked
+          cd ${{ github.workspace }}/jacked
+        working-directory: $${{ github.workspace }}/jacked
 
       - run: |
-          mkdir -p $GITHUB_WORKSPACE/diggity
-          cd $GITHUB_WORKSPACE/diggity
+          mkdir -p ${{ github.workspace }}/diggity
+          cd ${{ github.workspace }}/diggity
           
       - name: Checking out your repository...
         uses: actions/checkout@v3
