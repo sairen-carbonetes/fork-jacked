@@ -19,9 +19,7 @@ jobs:
           ref: main
           
       - run: |
-          mkdir -p ${{ github.workspace }}/jacked
-          cd ${{ github.workspace }}/jacked
-        working-directory: $${{ github.workspace }}/jacked
+        working-directory: $${{ github.workspace }}
 
       - run: |
           mkdir -p ${{ github.workspace }}/diggity
