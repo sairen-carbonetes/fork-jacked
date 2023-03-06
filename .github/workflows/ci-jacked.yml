@@ -1,0 +1,20 @@
+# name: optional, title of the github action
+name: Jacked Scan
+# on: github action like pull-request, push, events
+on: [push, pull_request]
+# jobs: one or more
+jobs:
+  jacked: #jacked: is the custom name of the build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run carbonetes/jacked
+        uses: carbonetes/jacked@v1.0.0
+        with:
+          repository: <your-repository-url>
+          fail_on_vulnerability: true
