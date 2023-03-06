@@ -33,8 +33,11 @@ jobs:
           repository: ${{ secrets.SCAN_REPO}}
           ref: main
 
-      - name: Getting workspace...
-        run: echo $(basename ${{ github.workspace }})
+      - name: Setup workspace...
+        run: |
+          echo $(basename ${{ github.workspace }})
+          cd..
+          echo $(basename ${{ github.workspace }})
         
       - name: Jacked Initialize Scanning...
         run: go run . -d ${{ github.workspace }}
