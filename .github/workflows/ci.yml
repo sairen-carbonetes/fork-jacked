@@ -17,8 +17,6 @@ jobs:
         with:
           repository: carbonetes/jacked
           ref: main
-          path: cjacked
-          run: cd cjacked
 
       - name: Setup go environment
         uses: actions/setup-go@v3
