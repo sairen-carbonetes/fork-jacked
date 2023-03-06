@@ -11,8 +11,8 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-      - name: Checkout directory
-        uses: action/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Scan current project
         uses: anchore/scan-action@v3
         with:
