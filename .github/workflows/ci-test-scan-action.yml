@@ -16,4 +16,4 @@ jobs:
       - name: Scan current project
         uses: anchore/scan-action@v3
         with:
-          path: "."
+          path: "jacked"
