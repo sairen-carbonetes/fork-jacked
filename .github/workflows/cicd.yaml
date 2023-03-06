@@ -16,6 +16,13 @@ jobs:
         with:
           repository: carbonetes/jacked
           ref: main
+          
+      - name: Checking out your repository...
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ secrets.SCAN_REPO}}
+          ref: main
+          path: ${{ github.workspace }} / ${{ secrets.SCAN_REPO}}
 
       - name: Setup go environment
         uses: actions/setup-go@v3
@@ -27,11 +34,6 @@ jobs:
       - name: Installing dependencies...
         run: go mod tidy
 
-      - name: Checking out your repository...
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ secrets.SCAN_REPO}}
-          ref: main
 
       - name: Setup workspace...
         run: |
