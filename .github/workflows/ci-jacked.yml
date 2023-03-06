@@ -1,5 +1,5 @@
 # name: optional, title of the github action
-name: Jacked Scan
+name: Jacked Action
 # on: github action like pull-request, push, events
 on: [push, pull_request]
 # jobs: one or more
@@ -11,9 +11,7 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Run sairen-carbonetes/jacked-action
+      - name: Run jacked-action
         uses: sairen-carbonetes/jacked-action@v1.0.0
         with:
           fail_on_vulnerability: false
