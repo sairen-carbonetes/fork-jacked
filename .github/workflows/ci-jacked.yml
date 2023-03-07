@@ -1,7 +1,7 @@
 # name: optional, title of the github action
 name: jacked-action
 # on: github action like pull-request, push, events
-on: [push, pull_request]
+on: [push]
 # jobs: one or more
 jobs:
   jacked: #jacked: is the custom name of the build:
