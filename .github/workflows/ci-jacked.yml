@@ -17,4 +17,4 @@ jobs:
       - name: Run jacked-action
         uses: sairen-carbonetes/jacked-action@v1.0.0
         with:
-          directory: jacked
+          directory: "jacked"
