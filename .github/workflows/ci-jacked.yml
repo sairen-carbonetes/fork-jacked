@@ -1,5 +1,5 @@
 # name: optional, title of the github action
-name: jacked-action2
+name: jacked-action4
 # on: github action like pull-request, push, events
 on: [push]
 # jobs: one or more
