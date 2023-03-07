@@ -13,6 +13,3 @@ jobs:
     steps:
       - name: Run jacked-action
         uses: sairen-carbonetes/jacked-action@v1.0.0
-        with:
-          fail_on_vulnerability: false
-          path: "."
