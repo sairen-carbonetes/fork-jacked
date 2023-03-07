@@ -4,7 +4,7 @@ name: jacked-action2
 on: [push]
 # jobs: one or more
 jobs:
-  jacked: #jacked: is the custom name of the build:
+  build: #jacked: is the custom name of the build:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
