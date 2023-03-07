@@ -14,13 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         
-      - name: Get directory name
-        run: |
-          repository_path=${{ github.workspace }}
-          repository_basename=$(basename "${repository_path}")
-          echo "${repository_basename}"
-        
       - name: Run jacked-action
         uses: sairen-carbonetes/jacked-action@v1.0.0
         with:
-          directory: ${{ repository_basename }}
+          directory: jacked
