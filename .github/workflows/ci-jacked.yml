@@ -1,5 +1,5 @@
 # name: optional, title of the github action
-name: jacked-action3
+name: jacked-action2
 # on: github action like pull-request, push, events
 on: [push]
 # jobs: one or more
@@ -11,10 +11,7 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - name: Checking out repo...
-      - uses: actions/checkout@v2
-      
-      - name: jacked-action
-      - uses: sairen-carbonetes/jacked-action@v1.0.0
-      - with:
+      - name: Run jacked-action
+        uses: sairen-carbonetes/jacked-action@v1.0.0
+        with:
           directory: sampledir
