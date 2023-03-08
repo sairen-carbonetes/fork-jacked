@@ -19,4 +19,4 @@ jobs:
         with:
           path: ${{ github.workspace }}
           output-format: table
-          severity-cutoff: medium
+          severity-cutoff: low
