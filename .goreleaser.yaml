@@ -25,10 +25,10 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - |
-        -X github.com/sairen/jacked/internal/version.version={{.Version}}
-        -X github.com/sairen/jacked/internal/version.buildDate={{.Date}}
-        -X github.com/sairen/jacked/internal/version.gitCommit={{.Commit}}
-        -X github.com/sairen/jacked/internal/version.gitDesc={{.Summary}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.version={{.Version}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.buildDate={{.Date}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.gitCommit={{.Commit}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.gitDesc={{.Summary}}
 
   - id: darwin-builds
     binary: jacked
@@ -42,10 +42,10 @@ builds:
       - CGO_ENABLED=0
     ldflags:
       - |
-        -X github.com/sairen/jacked/internal/version.version={{.Version}}
-        -X github.com/sairen/jacked/internal/version.buildDate={{.Date}}
-        -X github.com/sairen/jacked/internal/version.gitCommit={{.Commit}}
-        -X github.com/sairen/jacked/internal/version.gitDesc={{.Summary}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.version={{.Version}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.buildDate={{.Date}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.gitCommit={{.Commit}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.gitDesc={{.Summary}}
 
   - id: windows-build
     binary: jacked
@@ -58,10 +58,10 @@ builds:
       - CGO_ENABLED=0
     ldflags:
       - |
-        -X github.com/sairen/jacked/internal/version.version={{.Version}}
-        -X github.com/sairen/jacked/internal/version.buildDate={{.Date}}
-        -X github.com/sairen/jacked/internal/version.gitCommit={{.Commit}}
-        -X github.com/sairen/jacked/internal/version.gitDesc={{.Summary}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.version={{.Version}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.buildDate={{.Date}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.gitCommit={{.Commit}}
+        -X github.com/sairen-carbonetes/jacked/internal/version.gitDesc={{.Summary}}
 
 archives:
   - id: tar-archives
@@ -98,7 +98,7 @@ nfpms:
     formats:
       - rpm
       - deb
-    homepage: https://github.com/sairen/jacked
+    homepage: https://github.com/sairen-carbonetes/jacked
     maintainer: Carbonetes
     description: Jacked provides organizations with a more comprehensive look at their application to take calculated actions and create a better security approach. Its primary purpose is to scan vulnerabilities to implement subsequent risk mitigation measures.
     license: Apache 2.0
@@ -107,31 +107,31 @@ nfpms:
 brews:
   - skip_upload: false # set to true to avoid uploading while under testing
     tap:
-      owner: sairen
+      owner: sairen-carbonetes
       name: homebrew-jacked
       branch: main
     folder: Formula
     ids:
       - tar-archives
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
-    homepage: https://www.sairen.com/
+    homepage: https://www.sairen-carbonetes.com/
     description: "Jacked provides organizations with a more comprehensive look at their application to take calculated actions and create a better security approach. Its primary purpose is to scan vulnerabilities to implement subsequent risk mitigation measures."
     license: "Apache License 2.0"
 
 chocolateys:
   - skip_publish: false # set to true to avoid uploading while under testing
-    authors: sairen
+    authors: sairen-carbonetes
     description: "Jacked provides organizations with a more comprehensive look at their application to take calculated actions and create a better security approach. Its primary purpose is to scan vulnerabilities to implement subsequent risk mitigation measures."
     name: jacked
     ids:
       - zip-archives
     project_url: https://www.sairen.com/
     copyright: 2023 Carbonetes
-    license_url: https://github.com/sairen/jacked/blob/main/LICENSE
+    license_url: https://github.com/sairen-carbonetes/jacked/blob/main/LICENSE
     require_license_acceptance: false
-    project_source_url: https://github.com/sairen/jacked
-    docs_url: https://github.com/sairen/jacked/blob/main/README.md
-    release_notes: "https://github.com/sairen/jacked/releases/tag/v{{ .Version }}"
+    project_source_url: https://github.com/sairen-carbonetes/jacked
+    docs_url: https://github.com/sairen-carbonetes/jacked/blob/main/README.md
+    release_notes: "https://github.com/sairen-carbonetes/jacked/releases/tag/v{{ .Version }}"
     source_repo: "https://push.chocolatey.org/"
 
 checksum:
