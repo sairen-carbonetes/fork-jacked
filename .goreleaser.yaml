@@ -1,7 +1,7 @@
 project_name: jacked
 release:
   github:
-    owner: sairen
+    owner: sairen-carbonetes
     name: jacked
   name_template: "{{.Tag}}"
 
