@@ -96,7 +96,7 @@ The available `formats` are:
 - `spdx-xml`: A XML report conforming to the [SPDX 2.2 XML: Schema](https://github.com/mil-oss/spdx-xsd/blob/master/xml/xsd/spdx-xml-ref.xsd).format.
 ## Useful Commands and Flags 🚩
 ```
-jacked [command] [flag]
+jacked [command] [flags]
 ```
 
 |     SubCommand   |                  Description                 |
@@ -127,7 +127,7 @@ jacked [flag]
 | `-v`, `--version`                        | Print application version                                                                                                  |
 
 ```
-jacked config [flag]
+jacked config [flags]
 ```
 |    Config Flags  |                Descriptions                  |
 | :--------------- | :-------------------------------------------- |
