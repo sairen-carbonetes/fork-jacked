@@ -22,7 +22,7 @@ jobs:
           # Specify enabled parsers (default all).
           enabled_parsers: all
           # Save SBOM results to the output file.
-          output_file: sbom.jsom
+          output_file: sbom.json
           # Disables file listing from package metadata (default false).
           disable_file_listing: false
           # Disables secret search (default false).
