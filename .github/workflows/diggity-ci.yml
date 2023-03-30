@@ -1,7 +1,7 @@
-name: Jacked Action
+name: Diggity Action
 on: [push, pull_request]
 jobs:
-  jacked:
+  diggity:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
