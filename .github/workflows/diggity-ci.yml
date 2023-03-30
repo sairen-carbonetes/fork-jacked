@@ -7,6 +7,9 @@ jobs:
       matrix:
         os: [ubuntu-latest] # can add more os: windows-latest, macOS-latest
     steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        
       - name: BOM Diggity Action
       # You may pin to the exact commit or the version.
       # uses: carbonetes/diggity-action@7cb15cd68857ac6c737f6915b6714a970b57284e
