@@ -1,19 +1,12 @@
 pipeline {
     agent any
     
-    tools {
-        maven 'maven'
-        jdk 'jdk'
-        // Add the Jacked installation below if it's not already configured
-        jacked 'jacked'
-    }
-    
     stages {
         stage('Vulnerability Scan') {
             steps {
-                withEnv(["PATH+JACKED=${tool 'jacked'}/bin"]) {
-                    sh 'jacked -s file.txt -d . -st medium'
-                }
+                jacked scanName: "alpine",
+                       severityType: 'medium',
+                       autoInstall: true
             }
         }
     }
