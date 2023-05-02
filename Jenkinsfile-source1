@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Vulnerability Scan') {
             steps {
-                Jacked scanName: 'file.txt', severityType: 'medium', autoInstall: true
+                jacked scanName: 'alpine', severityType: 'medium', autoInstall: true
             }
         }
     }
