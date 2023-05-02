@@ -1,0 +1,14 @@
+pipeline  
+{  
+    agent any  
+    options {  
+        skipStagesAfterUnstable()  
+    }  
+    stages {  
+        stage('Build') {  
+            steps {  
+                jacked scanName: 'alpine', severityType: 'medium', autoInstall: true
+            }
+        }  
+    }  
+} 
