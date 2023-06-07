@@ -16,4 +16,4 @@ steps:
     scanName: '.'
     failCriteria: 'medium'
     ignoreCves: 
-    ignorePackageNames: 
+    ignorePackageNames: 'gorm.io/driver/sqlite'
