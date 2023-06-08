@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: centos-latest
+  vmImage: ubuntu-18.04
 
 steps:
 - task: Jacked@1
