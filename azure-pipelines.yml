@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: opensuse-latest
+  vmImage: centos-latest
 
 steps:
 - task: Jacked@1
