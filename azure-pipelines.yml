@@ -7,7 +7,7 @@ trigger:
 - main
 
 pool:
-  vmImage: amazonlinux-latest
+  vmImage: opensuse-latest
 
 steps:
 - task: Jacked@1
