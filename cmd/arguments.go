@@ -10,28 +10,13 @@ import (
 )
 
 var (
-	arguments model.Arguments = model.Arguments{
-		DisableFileListing:  new(bool),
-		SecretContentRegex:  new(string),
-		DisableSecretSearch: new(bool),
-		Image:               new(string),
-		SbomFile:            new(string),
-		Dir:                 new(string),
-		Tar:                 new(string),
-		Quiet:               new(bool),
-		OutputFile:          new(string),
-		ExcludedFilenames:   &[]string{},
-		EnabledParsers:      &[]string{},
-		RegistryURI:         new(string),
-		RegistryUsername:    new(string),
-		RegistryPassword:    new(string),
-		RegistryToken:       new(string),
-		FailCriteria:        new(string),
-	}
+	arguments   = model.NewArguments()
 	cfg         config.Configuration
+	ciCfg       config.CIConfiguration
 	quiet       bool
 	license     bool
 	secrets     bool
+	ciMode      bool
 	parserNames = []string{
 		"apk",
 		"debian",
@@ -68,6 +53,7 @@ func init() {
 
 	// Configuration set Flags Arguments
 	cfg.Load()
+	ciCfg.CILoad()
 
 	arguments.DisableSecretSearch = &cfg.SecretConfig.Disabled
 	arguments.SecretContentRegex = &cfg.SecretConfig.SecretRegex
@@ -83,11 +69,13 @@ func init() {
 
 	rootCmd.Flags().StringVar(arguments.SbomFile, "sbom", "", "Input sbom file from diggity to scan (Only read from json file)")
 	rootCmd.Flags().StringVarP(arguments.Output, "output", "o", cfg.Output, fmt.Sprintf("Show scan results in (%v) format", OutputTypes))
+	rootCmd.Flags().StringVarP(arguments.OutputFile, "file", "f", "", "Save the sbom result to the output file instead of writing to standard output")
 	rootCmd.Flags().BoolVarP(&secrets, "secrets", "s", !cfg.SecretConfig.Disabled, "Enable scanning for secrets")
 	rootCmd.Flags().BoolVarP(&license, "licenses", "l", cfg.LicenseFinder, "Enable scanning for package licenses")
 	rootCmd.Flags().BoolVarP(&quiet, "quiet", "q", cfg.Quiet, "Disable all logging statements")
 	rootCmd.Flags().BoolP("version", "v", false, "Print application version")
 	rootCmd.Flags().StringVar(arguments.FailCriteria, "fail-criteria", "", fmt.Sprintf("Input a severity that will be found at or above given severity then return code will be 1 (%v)", Severities))
+	rootCmd.Flags().BoolVar(&ciMode, "ci", false, "[Test-Feature] CI Mode for CI/CD Integrations (default false)")
 
 	rootCmd.Flags().StringVarP(arguments.Dir, "dir", "d", "", "Read directly from a path on disk (any directory) (e.g. 'jacked path/to/dir)'")
 	rootCmd.Flags().StringVarP(arguments.Tar, "tar", "t", "", "Read a tarball from a path on disk for archives created from docker save (e.g. 'jacked path/to/image.tar)'")
@@ -102,6 +90,11 @@ func init() {
 	rootCmd.Flags().StringVarP(arguments.RegistryPassword, "registry-password", "", cfg.Registry.Password, "Password credential for private registry access")
 	rootCmd.Flags().StringVarP(arguments.RegistryToken, "registry-token", "", cfg.Registry.Token, "Access token for private registry access")
 
+	rootCmd.Flags().StringVarP(arguments.IgnorePackageNames, "ignore-package-names", "", "", "Specify package names to be whitelisted on the result")
+	rootCmd.Flags().StringVarP(arguments.IgnoreCVEs, "ignore-cves", "", "", "Specify CVEs to be whitelisted on the result")
+	rootCmd.Flags().BoolVarP(arguments.SkipDbUpdate, "skip-db-update", "" ,false, "Skip Database Update on Scanning")
+	rootCmd.Flags().BoolVarP(arguments.ForceDbUpdate, "force-db-update", "" ,false, "Enables immediate implementation of database updates")
+	
 	rootCmd.PersistentFlags().BoolP("help", "h", false, "")
 	rootCmd.PersistentFlags().Lookup("help").Hidden = true
 	rootCmd.SetHelpCommand(&cobra.Command{Hidden: true})

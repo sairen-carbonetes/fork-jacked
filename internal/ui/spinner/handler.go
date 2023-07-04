@@ -1,62 +1,59 @@
 package spinner
 
-import "strconv"
+import (
+	"os"
+	"strconv"
+)
 
-func OnCheckDatabaseUpdateStart() {
-	SetMessage("Checking Database Update")
+func OnCheckDatabaseStart() {
+	if disable {
+		return
+	}
+	SetMessage("Checking Database")
+	Start()
+}
+
+func OnDatabaseUpdateStart() {
+	if disable {
+		return
+	}
+	SetMessage("Database Updated")
+}
+
+func OnSBOMScan(img string) {
+	if disable {
+		return
+	}
+	SetMessage("Searching for Packages [" + img + "]")
+	Start()
+
+}
+
+func OnVulnAnalysisStart(pkg int) {
+	if disable {
+		return
+	}
+	SetMessage("Scanning for vulnerabilities [" + strconv.Itoa(pkg) + " packages]")
 	Start()
 }
 
 func OnPause() {
+	if disable {
+		return
+	}
 	err := spin.Pause()
 	if err != nil {
 		log.Errorln(err.Error())
 	}
 }
-
-func OnCheckDatabaseUpdateEnd(err error) {
-	if err != nil {
-		spin.StopFailMessage(err.Error())
-		StopFail()
+func OnStop(err error) {
+	if disable {
+		return
 	}
-	Stop()
-}
-
-func OnDatabaseUpdateStart() {
-	SetMessage("Database Updated")
-}
-
-func OnDatabaseUpdateEnd(err error) {
-	Start()
 	if err != nil {
-		spin.StopFailMessage(err.Error())
+		spin.StopFailMessage("\n" + err.Error())
 		StopFail()
-	}
-	Stop()
-}
-
-func OnSBOMRequestStart(img string) {
-	SetMessage("Searching for Packages [" + img + "]")
-	Start()
-}
-
-func OnSBOMRequestEnd(err error) {
-	if err != nil {
-		spin.StopFailMessage(err.Error())
-		StopFail()
-	}
-	Stop()
-}
-
-func OnVulnAnalysisStart(pkg int) {
-	SetMessage("Scanning for vulnerabilities [" + strconv.Itoa(pkg) + " packages]")
-	Start()
-}
-
-func OnVulnAnalysisEnd(err error) {
-	if err != nil {
-		spin.StopFailMessage(err.Error())
-		StopFail()
+		os.Exit(1)
 	}
 	Stop()
 }

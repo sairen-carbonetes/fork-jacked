@@ -1,16 +1,15 @@
 package output
 
 import (
-	"encoding/json"
-	"fmt"
-
-	"github.com/carbonetes/jacked/pkg/core/model"
+	dm "github.com/carbonetes/diggity/pkg/model"
+	"github.com/carbonetes/jacked/internal/utils"
 )
 
-func printJsonResult(results *[]model.ScanResult) {
-	json, err := json.MarshalIndent(results, "", "  ")
+func printJsonResult(results *dm.SBOM) string {
+	json, err := utils.ToJSON(results)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s\n", string(json))
+
+	return string(json)
 }

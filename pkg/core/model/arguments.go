@@ -19,4 +19,8 @@ type Arguments struct {
 	Tar                 *string
 	ExcludedFilenames   *[]string
 	FailCriteria        *string
+	IgnorePackageNames  *string
+	IgnoreCVEs          *string
+	SkipDbUpdate        *bool
+	ForceDbUpdate       *bool
 }

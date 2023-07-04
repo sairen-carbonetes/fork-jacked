@@ -3,9 +3,8 @@ package table
 import (
 	"fmt"
 
-	"github.com/carbonetes/jacked/pkg/core/model"
-
 	"github.com/alexeyco/simpletable"
+	dm "github.com/carbonetes/diggity/pkg/model"
 )
 
 var (
@@ -15,7 +14,7 @@ var (
 func secretHeader() {
 	secretTable.Header = &simpletable.Header{
 		Cells: []*simpletable.Cell{
-			{Align: simpletable.AlignCenter, Text: Index},
+			{Align: simpletable.AlignCenter, Text: "#"},
 			{Align: simpletable.AlignCenter, Text: "Content Regex"},
 			{Align: simpletable.AlignCenter, Text: "File Name"},
 			{Align: simpletable.AlignCenter, Text: "File Path"},
@@ -24,20 +23,21 @@ func secretHeader() {
 	}
 }
 
-func secretRows(secrets *model.SecretResults) {
-	var index int = 1
+func secretRows(secrets *dm.SecretResults) int{
+	var count int = 1
 	for _, secret := range secrets.Secrets {
 		r := []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%v", index)},
+			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%v", count)},
 			{Text: secret.ContentRegexName},
 			{Text: secret.FileName},
 			{Text: secret.FilePath},
 			{Text: secret.LineNumber},
 		}
-		index++
+		count++
 		secretTable.Body.Cells = append(secretTable.Body.Cells, r)
 	}
-	secretFooter(index - 1)
+	secretFooter(count - 1)
+	return count -1
 }
 
 func secretFooter(count int) {
@@ -52,10 +52,11 @@ func secretFooter(count int) {
 	}
 }
 
-func PrintSecrets(secrets *model.SecretResults) {
+func PrintSecrets(secrets *dm.SecretResults) int{
 	secretHeader()
-	secretRows(secrets)
+	totalRows := secretRows(secrets)
 	secretTable.SetStyle(simpletable.StyleCompactLite)
 	log.Println("\nSecrets")
 	log.Println(secretTable.String())
+	return totalRows
 }

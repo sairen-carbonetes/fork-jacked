@@ -2,12 +2,9 @@ package config
 
 import (
 	"os"
-	"path/filepath"
 
-	"github.com/carbonetes/jacked/internal/logger"
 	"github.com/carbonetes/jacked/pkg/core/model"
 
-	"gopkg.in/yaml.v2"
 )
 
 type Configuration struct {
@@ -26,17 +23,6 @@ type Ignore struct {
 	Package       Package       `yaml:"package"`
 }
 
-type Vulnerability struct {
-	CVE      []string `yaml:"cve"`
-	Severity []string `yaml:"severity"`
-}
-
-type Package struct {
-	Name    []string `yaml:"name"`
-	Type    []string `yaml:"type"`
-	Version []string `yaml:"version"`
-}
-
 type Registry struct {
 	URI      string `yaml:"uri"`
 	Username string `yaml:"username"`
@@ -44,17 +30,13 @@ type Registry struct {
 	Token    string `yaml:"token"`
 }
 
-var (
-	configType = "yaml"
-	home, _    = os.UserHomeDir()
-	Filename   = "jacked"
-	File       = home + string(os.PathSeparator) + "." + Filename + "." + configType
-	log        = logger.GetLogger()
-)
+var File  = FileSetter("jacked")
+	
+
+
 
 // Indicate the default value for each configuration
 func (cfg *Configuration) SetDefault() *Configuration {
-
 	DefaultSecretConfig := model.SecretConfig{
 		Disabled:    true,
 		SecretRegex: "API_KEY|SECRET_KEY|DOCKER_AUTH",
@@ -97,20 +79,9 @@ func (cfg *Configuration) SetDefault() *Configuration {
 // Generate the configuration file with default values
 func (cfg *Configuration) Generate() {
 	cfg.SetDefault()
-	err := os.MkdirAll(filepath.Dir(File), 0700)
+	err := GenerateConfigFile(File, cfg)
 	if err != nil {
-		log.Fatalf("Cannot create directory %v", err.Error())
-	}
-	out, err := os.OpenFile(File, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		log.Fatalf("error encoding: %v", err)
-	}
-	defer out.Close()
-	enc := yaml.NewEncoder(out)
-
-	err = enc.Encode(cfg)
-	if err != nil {
-		log.Fatalf("error encoding: %v", err)
+		log.Error("Error generating config file")
 	}
 }
 
@@ -120,42 +91,34 @@ func (cfg *Configuration) Load() *Configuration {
 		cfg.Generate()
 		cfg.Load()
 	} else {
-		configFile, err := os.ReadFile(File)
+		err = LoadConfiguration(File, cfg)
 		if err != nil {
-			log.Fatalf("Error reading configuration file: %v", err)
-		}
-
-		err = yaml.Unmarshal(configFile, cfg)
-		if err != nil {
-			log.Fatalf("Error loading configurations: %v", err)
+			log.Error("Error loading config file")
 		}
 	}
 
 	if cfg.SecretConfig.Excludes == nil {
-		cfg.ResetDefault()
+		err := cfg.ResetDefault()
+		if err != nil {
+			log.Error("Error resetting config file")
+		}
 	}
 
 	return cfg
 }
 
 // Update the current configuration file
-func (cfg *Configuration) Update() {
-	log.Info("Updating configuration...")
-	err := os.Remove(File)
-	if err != nil {
-		log.Fatalf("Error deleting old configuration File: %v", err)
-	}
+func (cfg *Configuration) Update() error{
+	err := UpdateConfiguration(File)
 	cfg.Load()
 	log.Info("Done!")
+	return err
 }
 
 // Resets the configuration to default values
-func (cfg *Configuration) ResetDefault() {
-	log.Info("Resetting to default configurations...")
-	err := os.Remove(File)
-	if err != nil {
-		log.Fatalf("Error deleting temp File: %v", err)
-	}
+func (cfg *Configuration) ResetDefault() error{
+	err:= ResetDefaultConfiguration(File)
 	cfg.Load()
 	log.Info("Done!")
+	return err
 }

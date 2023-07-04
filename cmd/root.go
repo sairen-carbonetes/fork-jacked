@@ -6,8 +6,12 @@ import (
 
 	"github.com/carbonetes/jacked/internal/engine"
 	"github.com/carbonetes/jacked/internal/logger"
+	"github.com/carbonetes/jacked/internal/ui/bar"
 	"github.com/carbonetes/jacked/internal/ui/spinner"
 	"github.com/carbonetes/jacked/internal/version"
+	"github.com/carbonetes/jacked/pkg/core/ci"
+	"github.com/carbonetes/jacked/pkg/core/model"
+	"golang.org/x/exp/slices"
 
 	"github.com/spf13/cobra"
 )
@@ -21,7 +25,7 @@ var rootCmd = &cobra.Command{
 	Use:    "jacked [image]",
 	Args:   cobra.MaximumNArgs(1),
 	Short:  "Jacked Vulnerability Analyzer",
-	Long:   `Description: Jacked provides organizations with a more comprehensive look at their application to take calculated actions and create a better security approach. Its primary purpose is to scan vulnerabilities to implement subsequent risk mitigation measures.`,
+	Long:   `Jacked provides organizations with a more comprehensive look at their application to take calculated actions and create a better security approach. Its primary purpose is to scan vulnerabilities to implement subsequent risk mitigation measures.`,
 	PreRun: preRun,
 	Run:    run,
 }
@@ -32,10 +36,18 @@ func preRun(_ *cobra.Command, args []string) {
 		arguments.Quiet = &quiet
 		cfg.Output = *arguments.Output
 		cfg.LicenseFinder = license
+		//arguments for CI Mode
+		ciCfg.FailCriteria.Package.Name = appendIgnoreList(ciCfg.FailCriteria.Package.Name, *arguments.IgnorePackageNames)
+		ciCfg.FailCriteria.Vulnerability.CVE = appendIgnoreList(ciCfg.FailCriteria.Vulnerability.CVE, *arguments.IgnoreCVEs)
+		//arguments for normal scan
+		cfg.Ignore.Package.Name = appendIgnoreList(cfg.Ignore.Package.Name, *arguments.IgnorePackageNames)
+		cfg.Ignore.Vulnerability.CVE = appendIgnoreList(cfg.Ignore.Vulnerability.CVE, *arguments.IgnoreCVEs)
 
-		if *arguments.Quiet {
+		if !*arguments.Quiet {
+			spinner.Enable()
+			bar.Enable()
+		} else {
 			logger.SetQuietMode()
-			spinner.Disable()
 		}
 	}
 }
@@ -48,10 +60,8 @@ func run(c *cobra.Command, args []string) {
 	}
 
 	if c.Flags().Changed("secrets") {
-		if secrets {
-			*arguments.DisableSecretSearch = false
-			cfg.SecretConfig.Disabled = false
-		}
+		*arguments.DisableSecretSearch = false
+		cfg.SecretConfig.Disabled = false
 	}
 
 	if len(args) == 0 && len(*arguments.Image) == 0 && len(*arguments.Dir) == 0 && len(*arguments.Tar) == 0 && len(*arguments.SbomFile) == 0 {
@@ -62,76 +72,79 @@ func run(c *cobra.Command, args []string) {
 		os.Exit(0)
 	}
 
-	// Check user output type is supported
-	if arguments.Output != nil && *arguments.Output != "" {
-		compareOutputToOutputTypes(*arguments.Output)
+	if c.Flags().Changed("fail-criteria") {
+		if !ciMode {
+			log.Warn("Fail Criteria : CI Mode is not enabled.")
+		}
 	}
 
-	// Check user failcriteria is supported
-	if arguments.FailCriteria != nil && *arguments.FailCriteria != "" {
-		compareFailCriteriaToSeverities(arguments.FailCriteria)
+	if ciMode {
+		ci.Analyze(arguments, &ciCfg)
+	}
+
+	checkDefinedArguments(arguments)
+	engine.Start(arguments, &cfg)
+}
+
+func checkDefinedArguments(arguments *model.Arguments) {
+	// Check user output type is supported
+	if arguments.Output != nil && *arguments.Output != "" {
+		acceptedArgs := ValidateOutputArg(*arguments.Output)
+		if len(acceptedArgs) > 0 {
+			*arguments.Output = strings.Join(acceptedArgs, ",")
+		} else {
+			*arguments.Output = acceptedArgs[0]
+		}
 	}
 
 	if len(*arguments.Image) != 0 && !strings.Contains(*arguments.Image, tagSeparator) {
 		log.Print("Using default tag:", defaultTag)
 		modifiedTag := *arguments.Image + tagSeparator + defaultTag
 		arguments.Image = &modifiedTag
-		*arguments.Tar = ""
-		*arguments.Dir = ""
-		*arguments.SbomFile = ""
-	} else if len(*arguments.Tar) != 0 {
-		log.Printf("Scanning Tar File: %v", *arguments.Tar)
-		arguments.Image = nil
-		*arguments.Dir = ""
-		*arguments.SbomFile = ""
-	} else if len(*arguments.Dir) != 0 {
-		log.Printf("Scanning Directory: %v", *arguments.Dir)
-		arguments.Image = nil
-		*arguments.Tar = ""
-		*arguments.SbomFile = ""
-	} else if len(*arguments.SbomFile) != 0 {
-		log.Printf("Scanning SBOM JSON: %v", *arguments.SbomFile)
-		arguments.Image = nil
-		*arguments.Tar = ""
-		*arguments.Dir = ""
 	}
-
-	engine.Start(&arguments, &cfg)
 }
 
 // ValidateOutputArg checks if output types specified are valid
-func compareOutputToOutputTypes(outputs string) {
-	var noMatch bool
-	for _, output := range strings.Split(outputs, ",") {
-		for _, outputType := range OutputTypes {
-			if strings.EqualFold(output, outputType) {
-				noMatch = true
-				break
-			}
-			noMatch = false
-		}
-		if !noMatch {
-			log.Errorf("[warning]: Invalid output type: %+v \nSupported output types: %v", output, OutputTypes)
-			os.Exit(0)
+func ValidateOutputArg(outputArg string) []string {
+	var acceptedArgs []string
 
+	if strings.Contains(outputArg, ",") {
+		for _, o := range strings.Split(outputArg, ",") {
+			if slices.Contains(OutputTypes, strings.ToLower(o)) {
+				acceptedArgs = append(acceptedArgs, strings.ToLower(o))
+			}
+		}
+	} else {
+		if slices.Contains(OutputTypes, strings.ToLower(outputArg)) {
+			acceptedArgs = append(acceptedArgs, strings.ToLower(outputArg))
 		}
 	}
-
+	return acceptedArgs
 }
 
-func compareFailCriteriaToSeverities(failCriteria *string) {
-	var noMatch bool
-	for _, severity := range Severities {
-		if strings.EqualFold(*failCriteria, severity) {
-			noMatch = true
-			break
+func appendIgnoreList(currentList []string, input string) []string {
+	if len(input) == 0 {
+		return removeDuplicates(currentList)
+	}
+	var newList []string
+	if strings.Contains(input, ",") {
+		newList = append(newList, strings.Split(input, ",")...)
+	} else {
+		newList = append(newList, input)
+	}
+	return removeDuplicates(newList)
+}
+
+func removeDuplicates(slice []string) []string {
+	encountered := map[string]bool{}
+	result := []string{}
+
+	for _, str := range slice {
+		strLowerCase := strings.ToLower(str)
+		if !encountered[strLowerCase] {
+			encountered[strLowerCase] = true
+			result = append(result, strLowerCase)
 		}
-		noMatch = false
 	}
-
-	if !noMatch {
-		log.Errorf("[warning]: Invalid output type: %+v \nSupported output types: %v", *failCriteria, Severities)
-		os.Exit(0)
-
-	}
+	return result
 }

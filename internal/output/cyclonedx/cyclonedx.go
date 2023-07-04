@@ -1,34 +1,34 @@
 package cyclonedx
 
 import (
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"log"
 
-	"github.com/carbonetes/jacked/internal/parser"
-	"github.com/carbonetes/jacked/pkg/core/model"
+	"github.com/carbonetes/diggity/pkg/convert"
+	dm "github.com/carbonetes/diggity/pkg/model"
+	"github.com/carbonetes/jacked/internal/logger"
+	"github.com/carbonetes/jacked/internal/utils"
 )
 
-func PrintCycloneDXJSON(results *[]model.ScanResult) {
-	cdx := parser.ConvertToCycloneDX(results)
+var log = logger.GetLogger()
 
-	json, err := json.MarshalIndent(cdx, "", "  ")
+func PrintCycloneDXJSON(sbom *dm.SBOM) string {
+	cdx := convert.ToCDX(sbom.Packages)
+	json, err := utils.ToJSON(cdx)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("%s\n", string(json))
+    fmt.Printf("%s\n", string(json))
+	return string(json)
 
 }
 
-func PrintCycloneDXXML(results *[]model.ScanResult) {
-	cdx := parser.ConvertToCycloneDX(results)
-
+func PrintCycloneDXXML(sbom *dm.SBOM) string {
+	cdx := convert.ToCDX(sbom.Packages)
 	xml, err := xml.MarshalIndent(cdx, "", " ")
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	fmt.Printf("%+v\n", string(xml))
+	return string(xml)
 }
