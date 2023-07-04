@@ -15,7 +15,7 @@ jobs:
       # uses: carbonetes/jacked-action@e2bf9dc43be26cd84243393e82be115187eae0f0
       # uses: carbonetes/jacked-action@v1.0.0
       uses: sairen-carbonetes/fork-jacked-action@v1.0.0
-      with: 
+      with:
         # The path directory to scan.
         directory: .
         # Optionally specify the minimum vulnerability severity to trigger an "error".  Valid choices are "negligible", "low", "medium", "high" and "critical".
